@@ -144,6 +144,14 @@
         <p class="text-lg text-slate-400">Ujian Anda telah disubmit secara otomatis dan sesi ini dikunci. Silakan hubungi Pengawas.</p>
     </div>
 
+    <!-- OVERLAY OFFLINE (KONEKSI TERPUTUS) -->
+    <div id="offline-overlay" class="fixed inset-0 z-[9999] hidden flex-col items-center justify-center bg-slate-900/95 backdrop-blur-sm text-white p-6 text-center transition-opacity duration-300">
+        <i class="fas fa-wifi text-7xl text-red-500 mb-4 animate-pulse"></i>
+        <h1 class="text-4xl font-bold text-red-500 mb-2">KONEKSI TERPUTUS</h1>
+        <p class="text-xl mb-4 text-slate-300">Platform ini mewajibkan koneksi internet aktif ke server (GAS Backend).</p>
+        <p class="text-lg text-slate-400">Menunggu jaringan kembali terhubung...</p>
+    </div>
+
     <!-- VIEW 1: ROLE SELECTION -->
     <div id="view-role" class="flex-1 flex flex-col items-center justify-center p-6 bg-gradient-to-br from-blue-955 via-blue-900 to-slate-900 text-white relative overflow-hidden">
         <button onclick="toggleFullScreen()" class="absolute top-6 right-6 text-slate-300 hover:text-white z-50 transition transform hover:scale-110" title="Layar Penuh">
@@ -424,7 +432,7 @@
     </div>
 
     <!-- VIEW 5: TEACHER DASHBOARD -->
-    <div id="view-teacher" class="hidden flex flex-1 flex-col w-full h-full bg-slate-50">
+    <div id="view-teacher" class="hidden flex-1 flex flex-col w-full h-full bg-slate-50">
         <header class="bg-slate-800 text-white p-4 flex justify-between items-center shadow-md">
             <div class="flex items-center gap-3">
                 <!-- Logo Guru Transparan murni dengan No-referrer -->
@@ -489,6 +497,7 @@
                                 <label class="text-xs font-bold text-slate-500 uppercase">Input Massal (Upload CSV)</label>
                                 <button onclick="downloadTemplateCSV()" class="text-xs text-blue-600 hover:underline"><i class="fas fa-download"></i> Template CSV</button>
                             </div>
+                            <!-- Upload CSV Button -->
                             <input type="file" id="csv-upload-input" accept=".csv" class="hidden" onchange="handleCSVUpload(event)">
                             <button onclick="document.getElementById('csv-upload-input').click()" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-lg text-sm font-bold transition shadow-sm flex items-center justify-center gap-2">
                                 <i class="fas fa-file-upload"></i> Upload CSV Data Siswa
@@ -682,6 +691,7 @@
             } catch(e) { return {}; }
         }
 
+        // Simpan database siswa aktif ke localStorage dan backend
         function saveDB(db) {
             localStorage.setItem(DB_KEY, JSON.stringify(db));
             window.dispatchEvent(new Event('storage'));
@@ -695,10 +705,12 @@
                 let parsed = JSON.parse(data);
                 if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
                 
+                // Normalisasi struktur mapel agar mendukung pemisahan berbasis tingkat kelas unik
                 let normalized = {};
                 for (let key in parsed) {
                     let item = parsed[key];
                     if (typeof item === 'string') {
+                        // backward compatibility untuk format data string lama
                         normalized[`${key}_7`] = { url: item, active: false, duration: 90, grade: "7", subjectName: key };
                     } else if (item) {
                         let gradeTarget = item.grade || "7";
@@ -740,6 +752,7 @@
             syncToBackend();
         }
 
+        // Cek riwayat selesai ujian
         function hasCompletedExam(name, stdClass, examUrl) {
             const db = getCompletedExamsDB();
             const studentKey = `${name}_${stdClass || ''}`.toLowerCase().trim();
@@ -786,7 +799,7 @@
             } else if (status === 'success') {
                 badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span> <span class="hidden sm:block">Sinkronisasi Cloud</span>`;
             } else if (status === 'error') {
-                badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-500"></span> <span class="hidden sm:block">Mode Lokal</span>`;
+                badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> <span class="hidden sm:block">Server Terputus</span>`;
             }
         }
 
@@ -823,21 +836,17 @@
 
         async function fetchFromBackend() {
             try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 8000); 
-
+                // DIHAPUS: Penggunaan AbortController dilepas untuk menghindari kesalahan signal aborted tanpa alasan
                 const response = await fetch(GAS_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action: 'getDatabase' }),
-                    signal: controller.signal
+                    body: JSON.stringify({ action: 'getDatabase' })
                 });
                 
-                clearTimeout(timeoutId);
                 const responseText = await response.text();
                 
                 if (responseText.trim().startsWith("<!DOCTYPE") || responseText.trim().startsWith("<html") || responseText.trim().startsWith("<script")) {
-                    console.warn("GAS mendeteksi HTML respons dari server. Fallback Lokal.");
+                    console.warn("GAS mendeteksi HTML respons dari server. Membutuhkan otorisasi ulang.");
                     updateCloudUIStatus('error');
                     return; 
                 }
@@ -854,6 +863,7 @@
                     const oldComp = localStorage.getItem(COMPLETED_EXAMS_DB_KEY);
                     const oldReg = localStorage.getItem(REGISTERED_STUDENTS_DB_KEY);
 
+                    // Update data lokal HANYA jika data dari backend tersedia dan berbentuk benar
                     if(result.data.students && typeof result.data.students === 'object') {
                         const newDBStr = JSON.stringify(result.data.students);
                         if (newDBStr !== oldDB) {
@@ -862,6 +872,7 @@
                         }
                     }
                     if(result.data.subjects && typeof result.data.subjects === 'object') {
+                        // Normalisasi subjek dari cloud agar selalu tervalidasi per tingkat kelas
                         let rawCloudSubjects = result.data.subjects;
                         let normalizedCloud = {};
                         for (let k in rawCloudSubjects) {
@@ -892,6 +903,7 @@
                         }
                     }
 
+                    // SINKRONISASI & NORMALISASI DATA REGISTRASI (Mendukung Data_Registrasi / registeredStudents)
                     let regData = result.data.Data_Registrasi || result.data.data_registrasi || result.data.registeredStudents;
                     if (regData) {
                         if (typeof regData === 'object' && !Array.isArray(regData)) {
@@ -924,6 +936,7 @@
                     
                     updateCloudUIStatus('success');
 
+                    // Cegah pembaruan DOM selagi pengguna/siswa sedang berinteraksi memilih dropdown
                     const activeEl = document.activeElement;
                     const isUserInteracting = activeEl && 
                         ['student-class', 'student-name', 'student-subject-select'].includes(activeEl.id);
@@ -956,7 +969,7 @@
                     
                     if (!document.getElementById('view-teacher').classList.contains('hidden')) {
                         if (updatedReg) renderRegisteredStudents();
-                        renderTeacherDashboard(); 
+                        renderTeacherDashboard(); // Selalu segarkan list live monitoring aktivitas ujian
                     }
 
                     // --- PROTEKSI FORCE SUBMIT VIA BACKEND SINKRONISASI ---
@@ -1025,7 +1038,7 @@
             if (type === 'error') {
                 icon.className = "w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-4";
                 icon.innerHTML = '<i class="fas fa-times-circle"></i>';
-                document.getElementById('custom-alert-btn-ok').className = "w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition";
+                document.getElementById('custom-alert-btn-ok').className = "w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition";
             } else if (type === 'success') {
                 icon.className = "w-16 h-16 bg-green-100 text-green-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-4";
                 icon.innerHTML = '<i class="fas fa-check-circle"></i>';
@@ -1214,6 +1227,7 @@
             
             let hasActive = false;
             for (const [uniqueKey, data] of Object.entries(db)) {
+                // Memfilter mapel hanya jika status AKTIF dan TARGET KELAS-nya cocok dengan tingkatan selectedGrade siswa
                 if (data.active && String(data.grade) === String(selectedGrade)) {
                     hasActive = true;
                     const opt = document.createElement('option');
@@ -1263,6 +1277,7 @@
                 return;
             }
 
+            // Dapatkan nama asli mapel (tanpa durasi tambahan di teks pilihan)
             const rawText = selectEl.options[selectEl.selectedIndex].text;
             const subjectName = rawText.substring(0, rawText.lastIndexOf(" ("));
             prepareExamSession(url, subjectName);
@@ -1390,6 +1405,7 @@
             isExamActive = true;
             document.getElementById('display-violations').innerText = `${violations} / 3`;
             
+            // Dapatkan durasi ujian mapel terpilih
             const db = getSubjectsDB();
             let durationInMinutes = 90; 
             for (const [subjKey, data] of Object.entries(db)) {
@@ -1423,6 +1439,7 @@
                 
                 examTimer--;
                 
+                // Simpan sisa waktu secara berkala setiap 5 detik ke database/localStorage
                 if (examTimer % 5 === 0) {
                     updateStudentTimeRemaining(currentStudentId, examTimer);
                 }
@@ -1435,6 +1452,7 @@
                 if (timerEl) {
                     timerEl.innerText = `${hrs}:${mins}:${secs}`;
                     
+                    // Beri peringatan merah & berkedip jika sisa waktu kurang dari 5 menit (300 detik)
                     if (examTimer < 300) {
                         timerEl.classList.remove('text-green-400');
                         timerEl.classList.add('text-red-500', 'animate-pulse');
@@ -1454,6 +1472,7 @@
             }
         }
 
+        // Auto submit saat waktu pengerjaan habis
         function autoSubmitOnTimeout() {
             isExamActive = false;
             removeAntiCheat();
@@ -1489,6 +1508,7 @@
             });
         }
 
+        // Setup proteksi anti-cheat
         function setupAntiCheat() {
             document.addEventListener("visibilitychange", handleVisibilityChange);
             window.addEventListener("blur", handleWindowBlur);
@@ -1556,6 +1576,7 @@
             }, 1000);
         }
 
+        // Handle window focus
         function handleWindowFocus() {
             isFocusLost = false;
             document.getElementById('focus-warning').classList.add('hidden');
@@ -1906,6 +1927,22 @@
             filterSelect.value = currentVal;
         }
 
+        function initTeacherDashboard() {
+            switchView('view-teacher');
+            renderRegisteredStudents(); 
+            populateSubjectFilter();
+            renderTeacherDashboard();
+        }
+
+        // Listener memori (Mencegah multi-listener) dipindahkan keluar
+        window.addEventListener('storage', (e) => {
+            if(e.key === DB_KEY || e.key === null || e.key === SUBJECTS_DB_KEY || e.key === COMPLETED_EXAMS_DB_KEY || e.key === REGISTERED_STUDENTS_DB_KEY) {
+                if(e.key === SUBJECTS_DB_KEY) populateSubjectFilter();
+                if(e.key === REGISTERED_STUDENTS_DB_KEY) renderRegisteredStudents();
+                renderTeacherDashboard();
+            }
+        });
+
         function formatTimeRemaining(seconds) {
             if (seconds === null || seconds === undefined) return "-";
             if (seconds <= 0) return "Habis";
@@ -2062,7 +2099,7 @@
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `Monitoring_SPECTRA_EXAM_${new Date().toLocaleDateString().replace(/\//g, '-')}.csv`);
+            link.setAttribute("download", `Monitoring_Excambro_${new Date().toLocaleDateString().replace(/\//g, '-')}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -2160,22 +2197,6 @@
             showCustomAlert("Berhasil", `Pengaturan ${subject} untuk Kelas ${grade} (Durasi ${duration} Menit) berhasil disimpan!`, "success");
         }
 
-        function initTeacherDashboard() {
-            switchView('view-teacher');
-            renderRegisteredStudents(); 
-            populateSubjectFilter();
-            renderTeacherDashboard();
-        }
-
-        // Listener memori (Mencegah multi-listener) dipindahkan keluar
-        window.addEventListener('storage', (e) => {
-            if(e.key === DB_KEY || e.key === null || e.key === SUBJECTS_DB_KEY || e.key === COMPLETED_EXAMS_DB_KEY || e.key === REGISTERED_STUDENTS_DB_KEY) {
-                if(e.key === SUBJECTS_DB_KEY) populateSubjectFilter();
-                if(e.key === REGISTERED_STUDENTS_DB_KEY) renderRegisteredStudents();
-                renderTeacherDashboard();
-            }
-        });
-
         // ==========================================
         // 6. INITIALIZATION & FULLSCREEN
         // ==========================================
@@ -2250,6 +2271,23 @@
         document.addEventListener('MSFullscreenChange', updateFullscreenIcons);
 
         window.onload = () => {
+            // Cek status koneksi internet secara native
+            if (!navigator.onLine) {
+                document.getElementById('offline-overlay').classList.remove('hidden');
+                document.getElementById('offline-overlay').classList.add('flex');
+            }
+
+            window.addEventListener('online', () => {
+                document.getElementById('offline-overlay').classList.add('hidden');
+                document.getElementById('offline-overlay').classList.remove('flex');
+                fetchFromBackend();
+            });
+            
+            window.addEventListener('offline', () => {
+                document.getElementById('offline-overlay').classList.remove('hidden');
+                document.getElementById('offline-overlay').classList.add('flex');
+            });
+
             // --- DETEKSI & MIGRASI DATA LAMA (Mencegah Kehilangan Data Siswa) ---
             try {
                 const keyMigrations = {
