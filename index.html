@@ -146,6 +146,9 @@
 
     <!-- VIEW 1: ROLE SELECTION -->
     <div id="view-role" class="flex-1 flex flex-col items-center justify-center p-6 bg-gradient-to-br from-blue-955 via-blue-900 to-slate-900 text-white relative overflow-hidden">
+        <button onclick="toggleFullScreen()" class="absolute top-6 right-6 text-slate-300 hover:text-white z-50 transition transform hover:scale-110" title="Layar Penuh">
+            <i class="fas fa-expand fullscreen-icon text-xl"></i>
+        </button>
         
         <!-- Pendaran Cahaya Dekoratif di Latar Belakang -->
         <div class="absolute top-1/4 left-1/4 w-72 h-72 sm:w-96 sm:h-96 bg-blue-600/20 rounded-full blur-[100px] sm:blur-[120px] pointer-events-none"></div>
@@ -210,6 +213,9 @@
         <button onclick="switchView('view-role')" class="absolute top-6 left-6 text-slate-300 hover:text-white z-50">
             <i class="fas fa-arrow-left text-xl"></i>
         </button>
+        <button onclick="toggleFullScreen()" class="absolute top-6 right-6 text-slate-300 hover:text-white z-50 transition transform hover:scale-110" title="Layar Penuh">
+            <i class="fas fa-expand fullscreen-icon text-xl"></i>
+        </button>
         
         <div class="w-full max-w-md bg-slate-900/80 backdrop-blur-lg border border-slate-800 rounded-3xl shadow-2xl p-6 sm:p-10 text-center relative z-10">
             <div class="mb-6 flex justify-center">
@@ -252,6 +258,9 @@
         <!-- Kembali diarahkan ke pemilihan tingkatan kelas -->
         <button onclick="switchView('view-grade-selection')" class="absolute top-6 left-6 text-slate-300 hover:text-white z-50">
             <i class="fas fa-arrow-left text-xl"></i>
+        </button>
+        <button onclick="toggleFullScreen()" class="absolute top-6 right-6 text-slate-300 hover:text-white z-50 transition transform hover:scale-110" title="Layar Penuh">
+            <i class="fas fa-expand fullscreen-icon text-xl"></i>
         </button>
         <div class="w-full max-w-md mx-auto flex flex-col items-center mt-12 md:mt-0">
             <div class="bg-slate-900/80 p-6 sm:p-8 rounded-3xl border border-slate-700 w-full backdrop-blur-md shadow-2xl">
@@ -307,7 +316,7 @@
                         </div>
                     </div>
                     <button id="btn-start-scan" onclick="startRealScanner()" class="w-full bg-slate-700 hover:bg-slate-600 text-white p-3.5 rounded-xl font-bold transition shadow-lg flex items-center justify-center gap-2">
-                        <i class="fas fa-camera"></i> Atifkan Kamera Scanner
+                        <i class="fas fa-camera"></i> Aktifkan Kamera Scanner
                     </button>
                     <p id="scan-instruction" class="text-xs text-slate-400 mt-4 text-center">Pastikan identitas sudah terisi sebelum scan.</p>
                 </div>
@@ -316,7 +325,10 @@
     </div>
 
     <!-- VIEW 3: SYSTEM CHECK -->
-    <div id="view-system-check" class="hidden flex flex-1 flex-col items-center justify-center p-6 bg-slate-900 text-white">
+    <div id="view-system-check" class="hidden flex flex-1 flex-col items-center justify-center p-6 bg-slate-900 text-white relative">
+        <button onclick="toggleFullScreen()" class="absolute top-6 right-6 text-slate-300 hover:text-white z-50 transition transform hover:scale-110" title="Layar Penuh">
+            <i class="fas fa-expand fullscreen-icon text-xl"></i>
+        </button>
         <div class="w-full max-w-md bg-slate-800 p-8 rounded-2xl border border-slate-700">
             <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
                 <i class="fas fa-shield-check text-blue-400"></i> Pengecekan Keamanan Sistem
@@ -388,6 +400,9 @@
                 <div class="h-6 w-px bg-slate-800 stat-divider md:block hidden"></div>
                 
                 <!-- Tombol aksi berukuran besar untuk layar sentuh seluler -->
+                <button onclick="toggleFullScreen()" class="bg-slate-800 border border-slate-700 hover:bg-slate-700 px-4 py-2.5 sm:py-2 sm:px-3 rounded-xl sm:rounded-lg text-xs sm:text-sm font-bold shadow-lg flex items-center justify-center h-11 sm:h-auto min-w-[44px]" title="Layar Penuh">
+                    <i class="fas fa-expand fullscreen-icon"></i>
+                </button>
                 <button onclick="submitExam()" class="bg-red-600 hover:bg-red-700 px-4 py-2.5 sm:py-2 sm:px-3 rounded-xl sm:rounded-lg text-xs sm:text-sm font-bold shadow-lg shadow-red-900/30 flex items-center justify-center gap-1.5 flex-1 md:flex-initial active:scale-95 transition-transform h-11 sm:h-auto min-w-[80px]">
                     <i class="fas fa-paper-plane text-xs"></i> <span class="md:inline">Selesai</span>
                 </button>
@@ -422,7 +437,10 @@
                 <span id="cloud-sync-status" class="flex items-center gap-2 text-sm bg-slate-700 px-3 py-1 rounded-full border border-slate-600">
                     <span class="w-2 h-2 rounded-full bg-yellow-500 animate-pulse"></span> <span class="hidden sm:block">Sinkronisasi...</span>
                 </span>
-                <button onclick="switchView('view-role')" class="text-slate-300 hover:text-white text-sm">Keluar</button>
+                <button onclick="toggleFullScreen()" class="text-slate-300 hover:text-white" title="Layar Penuh">
+                    <i class="fas fa-expand fullscreen-icon text-lg"></i>
+                </button>
+                <button onclick="switchView('view-role')" class="text-slate-300 hover:text-white text-sm ml-2 border-l border-slate-600 pl-4">Keluar</button>
             </div>
         </header>
 
@@ -664,7 +682,6 @@
             } catch(e) { return {}; }
         }
 
-        // Simpan database siswa aktif ke localStorage dan backend
         function saveDB(db) {
             localStorage.setItem(DB_KEY, JSON.stringify(db));
             window.dispatchEvent(new Event('storage'));
@@ -678,12 +695,10 @@
                 let parsed = JSON.parse(data);
                 if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
                 
-                // Normalisasi struktur mapel agar mendukung pemisahan berbasis tingkat kelas unik
                 let normalized = {};
                 for (let key in parsed) {
                     let item = parsed[key];
                     if (typeof item === 'string') {
-                        // backward compatibility untuk format data string lama
                         normalized[`${key}_7`] = { url: item, active: false, duration: 90, grade: "7", subjectName: key };
                     } else if (item) {
                         let gradeTarget = item.grade || "7";
@@ -725,7 +740,6 @@
             syncToBackend();
         }
 
-        // Cek riwayat selesai ujian
         function hasCompletedExam(name, stdClass, examUrl) {
             const db = getCompletedExamsDB();
             const studentKey = `${name}_${stdClass || ''}`.toLowerCase().trim();
@@ -830,14 +844,24 @@
 
                 const result = JSON.parse(responseText);
                 if (result.status === 'success' && result.data) {
-                    let updated = false;
+                    let updatedDB = false;
+                    let updatedSubj = false;
+                    let updatedComp = false;
+                    let updatedReg = false;
+
+                    const oldDB = localStorage.getItem(DB_KEY);
+                    const oldSubj = localStorage.getItem(SUBJECTS_DB_KEY);
+                    const oldComp = localStorage.getItem(COMPLETED_EXAMS_DB_KEY);
+                    const oldReg = localStorage.getItem(REGISTERED_STUDENTS_DB_KEY);
 
                     if(result.data.students && typeof result.data.students === 'object') {
-                        localStorage.setItem(DB_KEY, JSON.stringify(result.data.students));
-                        updated = true;
+                        const newDBStr = JSON.stringify(result.data.students);
+                        if (newDBStr !== oldDB) {
+                            localStorage.setItem(DB_KEY, newDBStr);
+                            updatedDB = true;
+                        }
                     }
                     if(result.data.subjects && typeof result.data.subjects === 'object') {
-                        // Normalisasi subjek dari cloud agar selalu tervalidasi per tingkat kelas
                         let rawCloudSubjects = result.data.subjects;
                         let normalizedCloud = {};
                         for (let k in rawCloudSubjects) {
@@ -854,12 +878,18 @@
                                 };
                             }
                         }
-                        localStorage.setItem(SUBJECTS_DB_KEY, JSON.stringify(normalizedCloud));
-                        updated = true;
+                        const newSubjStr = JSON.stringify(normalizedCloud);
+                        if (newSubjStr !== oldSubj) {
+                            localStorage.setItem(SUBJECTS_DB_KEY, newSubjStr);
+                            updatedSubj = true;
+                        }
                     }
                     if(result.data.completedExams && typeof result.data.completedExams === 'object') {
-                        localStorage.setItem(COMPLETED_EXAMS_DB_KEY, JSON.stringify(result.data.completedExams));
-                        updated = true;
+                        const newCompStr = JSON.stringify(result.data.completedExams);
+                        if (newCompStr !== oldComp) {
+                            localStorage.setItem(COMPLETED_EXAMS_DB_KEY, newCompStr);
+                            updatedComp = true;
+                        }
                     }
 
                     let regData = result.data.Data_Registrasi || result.data.data_registrasi || result.data.registeredStudents;
@@ -878,49 +908,69 @@
                                 };
                             }).filter(s => s && s.name !== "");
 
-                            localStorage.setItem(REGISTERED_STUDENTS_DB_KEY, JSON.stringify(normalizedRegData));
-                            updated = true;
+                            const newRegStr = JSON.stringify(normalizedRegData);
+                            if (newRegStr !== oldReg) {
+                                localStorage.setItem(REGISTERED_STUDENTS_DB_KEY, newRegStr);
+                                updatedReg = true;
+                            }
                         }
                     }
 
-                    if (updated) {
-                        window.dispatchEvent(new Event('storage'));
-                        updateCloudUIStatus('success');
+                    const anyUpdated = updatedDB || updatedSubj || updatedComp || updatedReg;
 
-                        if (!document.getElementById('view-student-login').classList.contains('hidden')) {
+                    if (anyUpdated) {
+                        window.dispatchEvent(new Event('storage'));
+                    }
+                    
+                    updateCloudUIStatus('success');
+
+                    const activeEl = document.activeElement;
+                    const isUserInteracting = activeEl && 
+                        ['student-class', 'student-name', 'student-subject-select'].includes(activeEl.id);
+
+                    if (!document.getElementById('view-student-login').classList.contains('hidden')) {
+                        if (!isUserInteracting) {
                             const currentClass = document.getElementById('student-class').value;
                             const currentName = document.getElementById('student-name').value;
+                            const currentSubject = document.getElementById('student-subject-select').value;
                             
-                            loadLoginClasses();
-                            if (currentClass) {
-                                document.getElementById('student-class').value = currentClass;
-                                populateLoginNames();
-                                if (currentName) {
-                                    document.getElementById('student-name').value = currentName;
+                            if (updatedReg) {
+                                loadLoginClasses();
+                                if (currentClass) {
+                                    document.getElementById('student-class').value = currentClass;
+                                    populateLoginNames();
+                                    if (currentName) {
+                                        document.getElementById('student-name').value = currentName;
+                                    }
                                 }
                             }
-                            loadActiveSubjectsForStudent();
-                        }
-                        
-                        if (!document.getElementById('view-teacher').classList.contains('hidden')) {
-                            renderRegisteredStudents();
-                            renderTeacherDashboard();
-                        }
-
-                        if (isExamActive && currentStudentId) {
-                            const currentRecord = result.data.students ? result.data.students[currentStudentId] : null;
-                            if (currentRecord && (currentRecord.status === 'Dikunci (Force)' || currentRecord.status === 'Dikunci')) {
-                                isExamActive = false;
-                                clearInterval(timerInterval);
-                                removeAntiCheat();
-                                
-                                if (document.exitFullscreen) {
-                                    document.exitFullscreen().catch(err => console.log(err));
+                            
+                            if (updatedSubj) {
+                                loadActiveSubjectsForStudent();
+                                if (currentSubject) {
+                                    document.getElementById('student-subject-select').value = currentSubject;
                                 }
-
-                                document.getElementById('locked-overlay').classList.remove('hidden');
-                                document.getElementById('locked-overlay').classList.add('flex');
                             }
+                        }
+                    }
+                    
+                    if (!document.getElementById('view-teacher').classList.contains('hidden')) {
+                        if (updatedReg) renderRegisteredStudents();
+                        renderTeacherDashboard(); 
+                    }
+
+                    // --- PROTEKSI FORCE SUBMIT VIA BACKEND SINKRONISASI ---
+                    if (isExamActive && currentStudentId) {
+                        const currentRecord = result.data.students ? result.data.students[currentStudentId] : null;
+                        if (currentRecord && (currentRecord.status === 'Dikunci (Force)' || currentRecord.status === 'Dikunci')) {
+                            isExamActive = false;
+                            clearInterval(timerInterval);
+                            removeAntiCheat();
+                            
+                            exitFullScreenSafe();
+
+                            document.getElementById('locked-overlay').classList.remove('hidden');
+                            document.getElementById('locked-overlay').classList.add('flex');
                         }
                     }
                 } else {
@@ -975,7 +1025,7 @@
             if (type === 'error') {
                 icon.className = "w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-4";
                 icon.innerHTML = '<i class="fas fa-times-circle"></i>';
-                document.getElementById('custom-alert-btn-ok').className = "w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition";
+                document.getElementById('custom-alert-btn-ok').className = "w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition";
             } else if (type === 'success') {
                 icon.className = "w-16 h-16 bg-green-100 text-green-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-4";
                 icon.innerHTML = '<i class="fas fa-check-circle"></i>';
@@ -1164,7 +1214,6 @@
             
             let hasActive = false;
             for (const [uniqueKey, data] of Object.entries(db)) {
-                // Memfilter mapel hanya jika status AKTIF dan TARGET KELAS-nya cocok dengan tingkatan selectedGrade siswa
                 if (data.active && String(data.grade) === String(selectedGrade)) {
                     hasActive = true;
                     const opt = document.createElement('option');
@@ -1184,14 +1233,19 @@
                     return; 
                 }
                 const elem = document.documentElement;
+                let promise;
                 if (elem.requestFullscreen) {
-                    await elem.requestFullscreen();
+                    promise = elem.requestFullscreen();
                 } else if (elem.webkitRequestFullscreen) {
-                    await elem.webkitRequestFullscreen();
+                    promise = elem.webkitRequestFullscreen();
                 } else if (elem.msRequestFullscreen) {
-                    await elem.msRequestFullscreen();
+                    promise = elem.msRequestFullscreen();
                 } else if (elem.mozRequestFullScreen) {
-                    await elem.mozRequestFullScreen();
+                    promise = elem.mozRequestFullScreen();
+                }
+                
+                if (promise && promise.catch) {
+                    await promise.catch(e => console.log("Layar penuh otomatis ditolak:", e));
                 }
             } catch (e) {
                 console.log("Fullscreen otomatis ditolak browser.");
@@ -1209,7 +1263,6 @@
                 return;
             }
 
-            // Dapatkan nama asli mapel (tanpa durasi tambahan di teks pilihan)
             const rawText = selectEl.options[selectEl.selectedIndex].text;
             const subjectName = rawText.substring(0, rawText.lastIndexOf(" ("));
             prepareExamSession(url, subjectName);
@@ -1337,9 +1390,8 @@
             isExamActive = true;
             document.getElementById('display-violations').innerText = `${violations} / 3`;
             
-            // Dapatkan durasi ujian mapel terpilih
             const db = getSubjectsDB();
-            let durationInMinutes = 90; // default jika tidak ditemukan
+            let durationInMinutes = 90; 
             for (const [subjKey, data] of Object.entries(db)) {
                 if (data.url === currentExamUrl) {
                     durationInMinutes = data.duration || 90;
@@ -1347,7 +1399,6 @@
                 }
             }
 
-            // Cek apakah siswa memiliki sisa waktu tersimpan di database (melanjutkan sesi crash/keluar tab)
             let durationInSeconds = durationInMinutes * 60;
             const existingRecord = getActiveStudentRecord(currentStudentName, currentStudentClass);
             if (existingRecord && existingRecord.remainingTime !== undefined && existingRecord.remainingTime !== null) {
@@ -1372,7 +1423,6 @@
                 
                 examTimer--;
                 
-                // Simpan sisa waktu secara berkala setiap 5 detik ke database/localStorage
                 if (examTimer % 5 === 0) {
                     updateStudentTimeRemaining(currentStudentId, examTimer);
                 }
@@ -1382,15 +1432,16 @@
                 const secs = String(examTimer % 60).padStart(2, '0');
                 
                 const timerEl = document.getElementById('exam-timer');
-                timerEl.innerText = `${hrs}:${mins}:${secs}`;
-                
-                // Beri peringatan merah & berkedip jika sisa waktu kurang dari 5 menit (300 detik)
-                if (examTimer < 300) {
-                    timerEl.classList.remove('text-green-400');
-                    timerEl.classList.add('text-red-500', 'animate-pulse');
-                } else {
-                    timerEl.classList.add('text-green-400');
-                    timerEl.classList.remove('text-red-500', 'animate-pulse');
+                if (timerEl) {
+                    timerEl.innerText = `${hrs}:${mins}:${secs}`;
+                    
+                    if (examTimer < 300) {
+                        timerEl.classList.remove('text-green-400');
+                        timerEl.classList.add('text-red-500', 'animate-pulse');
+                    } else {
+                        timerEl.classList.add('text-green-400');
+                        timerEl.classList.remove('text-red-500', 'animate-pulse');
+                    }
                 }
             }, 1000);
         }
@@ -1403,7 +1454,6 @@
             }
         }
 
-        // Auto submit saat waktu pengerjaan habis
         function autoSubmitOnTimeout() {
             isExamActive = false;
             removeAntiCheat();
@@ -1412,9 +1462,7 @@
                 markExamCompleted(currentStudentName, currentStudentClass, currentExamUrl);
             }
             
-            if (document.exitFullscreen) {
-                document.exitFullscreen().catch(err => console.log(err));
-            }
+            exitFullScreenSafe();
             
             updateStudentStatus(currentStudentId, currentStudentName, currentStudentClass, 'Selesai (Waktu Habis)', violations, "Waktu habis otomatis submit", currentExamUrl);
             
@@ -1433,15 +1481,7 @@
                     markExamCompleted(currentStudentName, currentStudentClass, currentExamUrl);
                 }
                 
-                if (document.exitFullscreen) {
-                    document.exitFullscreen().catch(err => console.log(err));
-                } else if (document.webkitExitFullscreen) { 
-                    document.webkitExitFullscreen();
-                } else if (document.msExitFullscreen) { 
-                    document.msExitFullscreen();
-                } else if (document.mozCancelFullScreen) { 
-                    document.mozCancelFullScreen();
-                }
+                exitFullScreenSafe();
                 
                 updateStudentStatus(currentStudentId, currentStudentName, currentStudentClass, 'Selesai', violations, "", currentExamUrl);
                 showCustomAlert("Berhasil", "Ujian berhasil disubmit.", "success");
@@ -1449,7 +1489,6 @@
             });
         }
 
-        // Setup proteksi anti-cheat
         function setupAntiCheat() {
             document.addEventListener("visibilitychange", handleVisibilityChange);
             window.addEventListener("blur", handleWindowBlur);
@@ -1493,15 +1532,10 @@
                     clearInterval(timerInterval);
                     removeAntiCheat();
                     
-                    if (document.exitFullscreen) {
-                        document.exitFullscreen().catch(err => console.log(err));
-                    } else if (document.webkitExitFullscreen) { document.webkitExitFullscreen(); } 
-                    else if (document.msExitFullscreen) { document.msExitFullscreen(); } 
-                    else if (document.mozCancelFullScreen) { document.mozCancelFullScreen(); }
+                    exitFullScreenSafe();
 
                     const pendingUntil = Date.now() + 60000;
                     
-                    // Simpan sisa detik pengerjaan saat siswa didenda PENDING
                     updateStudentStatus(currentStudentId, currentStudentName, currentStudentClass, 'Pending', violations, "Keluar paksa tab/aplikasi", currentExamUrl, currentSubjectName, pendingUntil);
                     updateStudentTimeRemaining(currentStudentId, examTimer);
                     
@@ -1872,21 +1906,6 @@
             filterSelect.value = currentVal;
         }
 
-        function initTeacherDashboard() {
-            switchView('view-teacher');
-            renderRegisteredStudents(); 
-            populateSubjectFilter();
-            renderTeacherDashboard();
-            
-            window.addEventListener('storage', (e) => {
-                if(e.key === DB_KEY || e.key === null || e.key === SUBJECTS_DB_KEY || e.key === COMPLETED_EXAMS_DB_KEY || e.key === REGISTERED_STUDENTS_DB_KEY) {
-                    if(e.key === SUBJECTS_DB_KEY) populateSubjectFilter();
-                    if(e.key === REGISTERED_STUDENTS_DB_KEY) renderRegisteredStudents();
-                    renderTeacherDashboard();
-                }
-            });
-        }
-
         function formatTimeRemaining(seconds) {
             if (seconds === null || seconds === undefined) return "-";
             if (seconds <= 0) return "Habis";
@@ -2141,10 +2160,118 @@
             showCustomAlert("Berhasil", `Pengaturan ${subject} untuk Kelas ${grade} (Durasi ${duration} Menit) berhasil disimpan!`, "success");
         }
 
+        function initTeacherDashboard() {
+            switchView('view-teacher');
+            renderRegisteredStudents(); 
+            populateSubjectFilter();
+            renderTeacherDashboard();
+        }
+
+        // Listener memori (Mencegah multi-listener) dipindahkan keluar
+        window.addEventListener('storage', (e) => {
+            if(e.key === DB_KEY || e.key === null || e.key === SUBJECTS_DB_KEY || e.key === COMPLETED_EXAMS_DB_KEY || e.key === REGISTERED_STUDENTS_DB_KEY) {
+                if(e.key === SUBJECTS_DB_KEY) populateSubjectFilter();
+                if(e.key === REGISTERED_STUDENTS_DB_KEY) renderRegisteredStudents();
+                renderTeacherDashboard();
+            }
+        });
+
         // ==========================================
-        // 6. INITIALIZATION
+        // 6. INITIALIZATION & FULLSCREEN
         // ==========================================
+        
+        function toggleFullScreen() {
+            try {
+                if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
+                    let promise;
+                    if (document.documentElement.requestFullscreen) {
+                        promise = document.documentElement.requestFullscreen();
+                    } else if (document.documentElement.webkitRequestFullscreen) {
+                        promise = document.documentElement.webkitRequestFullscreen();
+                    } else if (document.documentElement.mozRequestFullScreen) {
+                        promise = document.documentElement.mozRequestFullScreen();
+                    } else if (document.documentElement.msRequestFullscreen) {
+                        promise = document.documentElement.msRequestFullscreen();
+                    }
+                    
+                    if (promise && promise.catch) {
+                        promise.catch(err => {
+                            console.warn("Fullscreen diblokir oleh browser (izin iframe):", err);
+                            showCustomAlert("Informasi", "Fitur Layar Penuh diblokir pada tampilan preview saat ini.", "info");
+                        });
+                    }
+                } else {
+                    exitFullScreenSafe();
+                }
+            } catch (err) {
+                console.warn("Fullscreen toggle logic error:", err);
+            }
+        }
+
+        function exitFullScreenSafe() {
+            try {
+                if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+                    let promise;
+                    if (document.exitFullscreen) {
+                        promise = document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) {
+                        promise = document.webkitExitFullscreen();
+                    } else if (document.mozCancelFullScreen) {
+                        promise = document.mozCancelFullScreen();
+                    } else if (document.msExitFullscreen) {
+                        promise = document.msExitFullscreen();
+                    }
+                    
+                    if (promise && promise.catch) {
+                        promise.catch(err => console.warn("Exit Fullscreen error:", err));
+                    }
+                }
+            } catch (err) {
+                console.warn(err);
+            }
+        }
+
+        function updateFullscreenIcons() {
+            const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+            document.querySelectorAll('.fullscreen-icon').forEach(icon => {
+                if (isFullscreen) {
+                    icon.classList.remove('fa-expand');
+                    icon.classList.add('fa-compress');
+                } else {
+                    icon.classList.remove('fa-compress');
+                    icon.classList.add('fa-expand');
+                }
+            });
+        }
+
+        document.addEventListener('fullscreenchange', updateFullscreenIcons);
+        document.addEventListener('webkitfullscreenchange', updateFullscreenIcons);
+        document.addEventListener('mozfullscreenchange', updateFullscreenIcons);
+        document.addEventListener('MSFullscreenChange', updateFullscreenIcons);
+
         window.onload = () => {
+            // --- DETEKSI & MIGRASI DATA LAMA (Mencegah Kehilangan Data Siswa) ---
+            try {
+                const keyMigrations = {
+                    'excambro_students_db': 'spectra_students_db',
+                    'excambro_subjects_db': 'spectra_subjects_db',
+                    'excambro_completed_exams_db': 'spectra_completed_exams_db',
+                    'excambro_registered_students_db': 'spectra_registered_students_db'
+                };
+                for (const [oldKey, newKey] of Object.entries(keyMigrations)) {
+                    const oldData = localStorage.getItem(oldKey);
+                    if (oldData) {
+                        const currentNewData = localStorage.getItem(newKey);
+                        // Hanya migrasi jika database SPECTRA yang baru masih kosong
+                        if (!currentNewData || currentNewData === "[]" || currentNewData === "{}") {
+                            localStorage.setItem(newKey, oldData);
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error("Gagal melakukan auto-migrasi data lama:", err);
+            }
+
             fetchFromBackend();
             switchView('view-role');
 
