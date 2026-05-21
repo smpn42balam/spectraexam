@@ -154,7 +154,7 @@
         <!-- Grid Pola Garis Halus -->
         <div class="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-25 pointer-events-none"></div>
 
-        <div class="w-full max-w-md bg-slate-900/80 backdrop-blur-lg border border-slate-800 rounded-3xl shadow-2xl p-6 sm:p-10 text-center relative z-10">
+        <div class="w-full max-w-lg bg-slate-900/80 backdrop-blur-lg border border-slate-800 rounded-3xl shadow-2xl p-6 sm:p-10 text-center relative z-10">
             
             <!-- Logo Imgur (Hanya Logo Bersih dengan Efek Drop Shadow Putih) -->
             <div class="mb-6 flex justify-center">
@@ -178,8 +178,8 @@
             <p class="text-[10px] text-slate-500 mb-4 uppercase tracking-widest font-bold">Pilih peran untuk memulai</p>
             
             <div class="space-y-4">
-                <!-- Kartu Siswa -->
-                <button onclick="showStudentLogin()" class="w-full text-left bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white p-5 rounded-2xl font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/20 flex items-center gap-4 group">
+                <!-- Kartu Siswa (Diarahkan ke Pemilihan Tingkat Kelas terlebih dahulu) -->
+                <button onclick="showGradeSelection()" class="w-full text-left bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white p-5 rounded-2xl font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/20 flex items-center gap-4 group">
                     <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center text-white text-2xl group-hover:scale-110 transition-transform duration-300">
                         <i class="fas fa-user-graduate"></i>
                     </div>
@@ -205,9 +205,52 @@
         </div>
     </div>
 
+    <!-- VIEW 1B: GRADE SELECTION (PILIH TINGKAT KELAS) -->
+    <div id="view-grade-selection" class="hidden flex-1 flex flex-col items-center justify-center p-6 bg-gradient-to-br from-blue-955 via-blue-900 to-slate-900 text-white relative overflow-hidden">
+        <button onclick="switchView('view-role')" class="absolute top-6 left-6 text-slate-300 hover:text-white z-50">
+            <i class="fas fa-arrow-left text-xl"></i>
+        </button>
+        
+        <div class="w-full max-w-md bg-slate-900/80 backdrop-blur-lg border border-slate-800 rounded-3xl shadow-2xl p-6 sm:p-10 text-center relative z-10">
+            <div class="mb-6 flex justify-center">
+                <div class="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center text-blue-400 text-3xl">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+            </div>
+            
+            <h2 class="text-2xl font-bold mb-2">Pilih Tingkat Kelas</h2>
+            <p class="text-sm text-slate-400 mb-8">Pilih tingkatan kelas Anda saat ini untuk memuat nama peserta.</p>
+
+            <div class="space-y-4">
+                <button onclick="selectGrade(7)" class="w-full bg-slate-800/80 hover:bg-blue-600 border border-slate-700/60 text-white p-4 rounded-xl font-bold transition transform hover:-translate-y-0.5 shadow flex items-center justify-between group">
+                    <span class="flex items-center gap-3">
+                        <span class="w-8 h-8 bg-blue-500/10 rounded-lg flex items-center justify-center text-blue-400 font-bold group-hover:bg-white/20 group-hover:text-white">7</span>
+                        Kelas VII (Tujuh)
+                    </span>
+                    <i class="fas fa-chevron-right text-slate-500 group-hover:text-white"></i>
+                </button>
+                <button onclick="selectGrade(8)" class="w-full bg-slate-800/80 hover:bg-blue-600 border border-slate-700/60 text-white p-4 rounded-xl font-bold transition transform hover:-translate-y-0.5 shadow flex items-center justify-between group">
+                    <span class="flex items-center gap-3">
+                        <span class="w-8 h-8 bg-blue-500/10 rounded-lg flex items-center justify-center text-blue-400 font-bold group-hover:bg-white/20 group-hover:text-white">8</span>
+                        Kelas VIII (Delapan)
+                    </span>
+                    <i class="fas fa-chevron-right text-slate-500 group-hover:text-white"></i>
+                </button>
+                <button onclick="selectGrade(9)" class="w-full bg-slate-800/80 hover:bg-blue-600 border border-slate-700/60 text-white p-4 rounded-xl font-bold transition transform hover:-translate-y-0.5 shadow flex items-center justify-between group">
+                    <span class="flex items-center gap-3">
+                        <span class="w-8 h-8 bg-blue-500/10 rounded-lg flex items-center justify-center text-blue-400 font-bold group-hover:bg-white/20 group-hover:text-white">9</span>
+                        Kelas IX (Sembilan)
+                    </span>
+                    <i class="fas fa-chevron-right text-slate-500 group-hover:text-white"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- VIEW 2: STUDENT LOGIN -->
     <div id="view-student-login" class="hidden flex flex-1 flex-col items-center justify-center p-6 bg-slate-800 text-white relative overflow-y-auto">
-        <button onclick="stopScannerAndGoBack()" class="absolute top-6 left-6 text-slate-300 hover:text-white z-50">
+        <!-- Kembali diarahkan ke pemilihan tingkatan kelas -->
+        <button onclick="switchView('view-grade-selection')" class="absolute top-6 left-6 text-slate-300 hover:text-white z-50">
             <i class="fas fa-arrow-left text-xl"></i>
         </button>
         <div class="w-full max-w-md mx-auto flex flex-col items-center mt-12 md:mt-0">
@@ -217,13 +260,13 @@
                         <i class="fas fa-user-edit"></i>
                     </div>
                 </div>
-                <h2 class="text-2xl font-bold mb-2 text-center">Masuk Ujian</h2>
-                <p class="text-sm text-slate-400 mb-6 text-center">Pilih identitas Anda dan tentukan metode ujian.</p>
+                <h2 class="text-2xl font-bold mb-1 text-center">Masuk Ujian</h2>
+                <p id="display-selected-grade" class="text-xs text-blue-400 font-bold uppercase mb-4 text-center tracking-wider">Kelas 7</p>
 
                 <!-- Identitas (Dropdown Pre-register) -->
                 <div class="space-y-4 mb-6">
                     <div>
-                        <label class="text-xs text-slate-400 font-bold uppercase mb-1 block">Kelas</label>
+                        <label class="text-xs text-slate-400 font-bold uppercase mb-1 block">Kelas / Rombel</label>
                         <select id="student-class" onchange="populateLoginNames()" class="w-full p-3.5 rounded-xl bg-slate-800 text-white border border-slate-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition cursor-pointer">
                             <option value="">-- Pilih Kelas --</option>
                         </select>
@@ -264,7 +307,7 @@
                         </div>
                     </div>
                     <button id="btn-start-scan" onclick="startRealScanner()" class="w-full bg-slate-700 hover:bg-slate-600 text-white p-3.5 rounded-xl font-bold transition shadow-lg flex items-center justify-center gap-2">
-                        <i class="fas fa-camera"></i> Aktifkan Kamera Scanner
+                        <i class="fas fa-camera"></i> Atifkan Kamera Scanner
                     </button>
                     <p id="scan-instruction" class="text-xs text-slate-400 mt-4 text-center">Pastikan identitas sudah terisi sebelum scan.</p>
                 </div>
@@ -334,7 +377,7 @@
                     <div id="display-violations" class="font-bold text-red-500 text-sm sm:text-base"><i class="fas fa-triangle-exclamation text-xs mr-1"></i>0 / 3</div>
                 </div>
                 
-                <div class="h-6 w-px bg-slate-800 stat-divider"></div>
+                <div class="h-8 w-px bg-slate-800 stat-divider"></div>
                 
                 <div class="text-center md:text-right flex-1 md:flex-initial">
                     <div class="text-[9px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider sm:block hidden">Sisa Waktu</div>
@@ -439,7 +482,7 @@
                                 <div class="flex-grow border-t border-slate-200"></div>
                             </div>
                             
-                            <textarea id="bulk-students-input" rows="2" class="w-full p-3 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500" placeholder="Format: Nama Siswa, Kelas&#10;Contoh: Budi Santoso, XII IPA 1"></textarea>
+                            <textarea id="bulk-students-input" rows="2" class="w-full p-3 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500" placeholder="Format: Nama Siswa, Kelas&#10;Contoh: Budi Santoso, 7A"></textarea>
                             <button onclick="importStudents()" class="w-full bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-bold transition shadow-sm flex items-center justify-center gap-2">
                                 <i class="fas fa-plus-circle"></i> Tambahkan Manual
                             </button>
@@ -459,30 +502,41 @@
                     </div>
                 </div>
 
-                <!-- Manajemen Ujian & Akses -->
+                <!-- Manajemen Ujian & Akses (DIPERBARUI DENGAN PILIHAN TINGKAT KELAS) -->
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-6 flex flex-col lg:flex-row gap-6">
                     <div class="flex-1">
                         <h2 class="font-bold text-slate-800 text-lg mb-2"><i class="fas fa-cogs text-blue-500 mr-2"></i> Manajemen Ujian & Akses</h2>
-                        <p class="text-sm text-slate-500 mb-6">Kelola link soal ujian, durasi waktu, serta pengaturan akses siswa.</p>
+                        <p class="text-sm text-slate-500 mb-6">Kelola link soal ujian, durasi waktu, tingkat sasaran, serta pengaturan akses siswa.</p>
                         
                         <div class="space-y-5">
-                            <div>
-                                <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">Mata Pelajaran</label>
-                                <select id="subject-select" onchange="loadSubjectSettings()" class="w-full p-3 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 font-semibold text-slate-700">
-                                    <option value="">-- Pilih Mata Pelajaran --</option>
-                                    <option value="Pendidikan Agama">Pendidikan Agama</option>
-                                    <option value="Pendidikan Pancasila">Pendidikan Pancasila</option>
-                                    <option value="Bahasa Indonesia">Bahasa Indonesia</option>
-                                    <option value="Matematika">Matematika</option>
-                                    <option value="IPA">IPA</option>
-                                    <option value="IPS">IPS</option>
-                                    <option value="Bahasa Inggris">Bahasa Inggris</option>
-                                    <option value="Pendidikan Jasmani (PJOK)">Pendidikan Jasmani (PJOK)</option>
-                                    <option value="Bahasa Lampung">Bahasa Lampung</option>
-                                    <option value="PAK">PAK (Pendidikan Anti Korupsi)</option>
-                                    <option value="Seni Budaya">Seni Budaya</option>
-                                    <option value="Informatika">Informatika</option>
-                                </select>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">Mata Pelajaran</label>
+                                    <select id="subject-select" onchange="loadSubjectSettings()" class="w-full p-3 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 font-semibold text-slate-700">
+                                        <option value="">-- Pilih Mata Pelajaran --</option>
+                                        <option value="Pendidikan Agama">Pendidikan Agama</option>
+                                        <option value="Pendidikan Pancasila">Pendidikan Pancasila</option>
+                                        <option value="Bahasa Indonesia">Bahasa Indonesia</option>
+                                        <option value="Matematika">Matematika</option>
+                                        <option value="IPA">IPA</option>
+                                        <option value="IPS">IPS</option>
+                                        <option value="Bahasa Inggris">Bahasa Inggris</option>
+                                        <option value="Pendidikan Jasmani (PJOK)">Pendidikan Jasmani (PJOK)</option>
+                                        <option value="Bahasa Lampung">Bahasa Lampung</option>
+                                        <option value="PAK">PAK (Pendidikan Anti Korupsi)</option>
+                                        <option value="Seni Budaya">Seni Budaya</option>
+                                        <option value="Informatika">Informatika</option>
+                                    </select>
+                                </div>
+                                <!-- Dropdown Pemilihan Sasaran Kelas -->
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">Tingkat Kelas Sasaran</label>
+                                    <select id="subject-grade-target" onchange="loadSubjectSettings()" class="w-full p-3 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 font-semibold text-slate-700">
+                                        <option value="7">Kelas 7 (Tujuh)</option>
+                                        <option value="8">Kelas 8 (Delapan)</option>
+                                        <option value="9">Kelas 9 (Sembilan)</option>
+                                    </select>
+                                </div>
                             </div>
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -499,14 +553,15 @@
                                 </div>
                             </div>
 
+                            <!-- Checkbox Akses Ujian Langsung -->
                             <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200">
                                 <div class="pr-4">
                                     <h4 class="font-bold text-sm text-slate-700">Akses Pilihan Langsung</h4>
-                                    <p class="text-xs text-slate-500 mt-1">Jika diaktifkan, siswa dapat langsung memilih dan mengerjakan mapel ini di menu depan tanpa scan QR.</p>
+                                    <p class="text-xs text-slate-500 mt-1">Jika diaktifkan, siswa tingkat terpilih dapat langsung mengerjakan mapel ini di menu depan tanpa scan QR.</p>
                                 </div>
                                 <label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
                                   <input type="checkbox" id="subject-active-toggle" class="sr-only peer">
-                                  <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                  <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:translate-x-full peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                                 </label>
                             </div>
 
@@ -591,6 +646,7 @@
         let timerInterval = null;
         let isFocusLost = false;
         let html5QrCode = null;
+        let selectedGrade = null; // Menyimpan tingkatan kelas yang dipilih (7, 8, atau 9)
 
         const DB_KEY = 'spectra_students_db';
         const SUBJECTS_DB_KEY = 'spectra_subjects_db';
@@ -622,14 +678,28 @@
                 let parsed = JSON.parse(data);
                 if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
                 
+                // Normalisasi struktur mapel agar mendukung pemisahan berbasis tingkat kelas unik
+                let normalized = {};
                 for (let key in parsed) {
-                    if (typeof parsed[key] === 'string') {
-                        parsed[key] = { url: parsed[key], active: false, duration: 90 };
-                    } else if (parsed[key] && !parsed[key].duration) {
-                        parsed[key].duration = 90; // default 90 menit jika tidak diatur
+                    let item = parsed[key];
+                    if (typeof item === 'string') {
+                        // backward compatibility untuk format data string lama
+                        normalized[`${key}_7`] = { url: item, active: false, duration: 90, grade: "7", subjectName: key };
+                    } else if (item) {
+                        let gradeTarget = item.grade || "7";
+                        let nameOnly = item.subjectName || key.split('_')[0] || key;
+                        let uniqueKey = `${nameOnly}_${gradeTarget}`;
+                        
+                        normalized[uniqueKey] = {
+                            url: item.url || "",
+                            active: !!item.active,
+                            duration: parseInt(item.duration) || 90,
+                            grade: String(gradeTarget),
+                            subjectName: nameOnly
+                        };
                     }
                 }
-                return parsed;
+                return normalized;
             } catch(e) { return {}; }
         }
 
@@ -655,13 +725,13 @@
             syncToBackend();
         }
 
+        // Cek riwayat selesai ujian
         function hasCompletedExam(name, stdClass, examUrl) {
             const db = getCompletedExamsDB();
             const studentKey = `${name}_${stdClass || ''}`.toLowerCase().trim();
             return db[studentKey] && Array.isArray(db[studentKey]) && db[studentKey].includes(examUrl);
         }
 
-        // Cari record siswa aktif
         function getActiveStudentRecord(name, stdClass) {
             const db = getDB();
             for (let id in db) {
@@ -676,7 +746,6 @@
             try {
                 const data = localStorage.getItem(REGISTERED_STUDENTS_DB_KEY);
                 let parsed = data ? JSON.parse(data) : [];
-                // Proteksi: Jika backend GAS mengubah Array menjadi Object, kembalikan ke Array
                 if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
                     parsed = Object.values(parsed);
                 }
@@ -720,7 +789,6 @@
                     }
                 };
                 
-                // Gunakan text/plain untuk melewati preflight CORS yang ketat dari browser
                 const response = await fetch(GAS_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -741,17 +809,21 @@
 
         async function fetchFromBackend() {
             try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 8000); 
+
                 const response = await fetch(GAS_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({ action: 'getDatabase' })
+                    body: JSON.stringify({ action: 'getDatabase' }),
+                    signal: controller.signal
                 });
                 
-                // PENCEGAHAN CRASH (SyntaxError: Unexpected token '<')
+                clearTimeout(timeoutId);
                 const responseText = await response.text();
                 
                 if (responseText.trim().startsWith("<!DOCTYPE") || responseText.trim().startsWith("<html") || responseText.trim().startsWith("<script")) {
-                    console.warn("GAS mendeteksi HTML respons dari server (bukan JSON). Sesi ini menggunakan penyimpanan lokal perangkat Anda sementara.");
+                    console.warn("GAS mendeteksi HTML respons dari server. Fallback Lokal.");
                     updateCloudUIStatus('error');
                     return; 
                 }
@@ -760,13 +832,29 @@
                 if (result.status === 'success' && result.data) {
                     let updated = false;
 
-                    // Update data lokal HANYA jika data dari backend tersedia dan berbentuk benar
                     if(result.data.students && typeof result.data.students === 'object') {
                         localStorage.setItem(DB_KEY, JSON.stringify(result.data.students));
                         updated = true;
                     }
                     if(result.data.subjects && typeof result.data.subjects === 'object') {
-                        localStorage.setItem(SUBJECTS_DB_KEY, JSON.stringify(result.data.subjects));
+                        // Normalisasi subjek dari cloud agar selalu tervalidasi per tingkat kelas
+                        let rawCloudSubjects = result.data.subjects;
+                        let normalizedCloud = {};
+                        for (let k in rawCloudSubjects) {
+                            let item = rawCloudSubjects[k];
+                            if (typeof item === 'object') {
+                                let gTarget = item.grade || "7";
+                                let sName = item.subjectName || k.split('_')[0] || k;
+                                normalizedCloud[`${sName}_${gTarget}`] = {
+                                    url: item.url || "",
+                                    active: !!item.active,
+                                    duration: parseInt(item.duration) || 90,
+                                    grade: String(gTarget),
+                                    subjectName: sName
+                                };
+                            }
+                        }
+                        localStorage.setItem(SUBJECTS_DB_KEY, JSON.stringify(normalizedCloud));
                         updated = true;
                     }
                     if(result.data.completedExams && typeof result.data.completedExams === 'object') {
@@ -774,8 +862,6 @@
                         updated = true;
                     }
 
-                    // SINKRONISASI & NORMALISASI DATA REGISTRASI (Mendukung Data_Registrasi / registeredStudents)
-                    // Mendukung kolom "Nama Siswa" dan "Kelas" dari spreadsheet Anda
                     let regData = result.data.Data_Registrasi || result.data.data_registrasi || result.data.registeredStudents;
                     if (regData) {
                         if (typeof regData === 'object' && !Array.isArray(regData)) {
@@ -784,7 +870,6 @@
                         if (Array.isArray(regData)) {
                             const normalizedRegData = regData.map(s => {
                                 if (!s) return null;
-                                // Pemetaan fleksibel dari kolom spreadsheet "Nama Siswa" -> name, "Kelas" -> class
                                 const name = s["Nama Siswa"] || s.name || s.Nama || s.nama || s.nama_siswa || "";
                                 const cls = s["Kelas"] || s.class || s.Kelas || s.kelas || "";
                                 return {
@@ -802,7 +887,6 @@
                         window.dispatchEvent(new Event('storage'));
                         updateCloudUIStatus('success');
 
-                        // Segarkan elemen UI secara langsung berdasarkan layar yang aktif
                         if (!document.getElementById('view-student-login').classList.contains('hidden')) {
                             const currentClass = document.getElementById('student-class').value;
                             const currentName = document.getElementById('student-name').value;
@@ -823,11 +907,9 @@
                             renderTeacherDashboard();
                         }
 
-                        // --- PROTEKSI FORCE SUBMIT VIA BACKEND SINKRONISASI ---
                         if (isExamActive && currentStudentId) {
                             const currentRecord = result.data.students ? result.data.students[currentStudentId] : null;
                             if (currentRecord && (currentRecord.status === 'Dikunci (Force)' || currentRecord.status === 'Dikunci')) {
-                                // Sesi ujian langsung ditutup paksa karena perintah Pengawas di cloud
                                 isExamActive = false;
                                 clearInterval(timerInterval);
                                 removeAntiCheat();
@@ -845,7 +927,7 @@
                      updateCloudUIStatus('error');
                 }
             } catch(e) {
-                console.error("Gagal sinkronisasi dari server:", e);
+                console.warn("Gagal sinkronisasi dari server karena jaringan (Failed to fetch). Fallback lokal.");
                 updateCloudUIStatus('error');
             }
         }
@@ -893,7 +975,7 @@
             if (type === 'error') {
                 icon.className = "w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-4";
                 icon.innerHTML = '<i class="fas fa-times-circle"></i>';
-                document.getElementById('custom-alert-btn-ok').className = "w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-red-500/30";
+                document.getElementById('custom-alert-btn-ok').className = "w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition";
             } else if (type === 'success') {
                 icon.className = "w-16 h-16 bg-green-100 text-green-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-4";
                 icon.innerHTML = '<i class="fas fa-check-circle"></i>';
@@ -1010,6 +1092,17 @@
             document.getElementById(viewId).classList.remove('hidden');
         }
 
+        // --- SISTEM PEMILIHAN TINGKAT KELAS ---
+        function showGradeSelection() {
+            switchView('view-grade-selection');
+        }
+
+        function selectGrade(gradeNum) {
+            selectedGrade = gradeNum;
+            document.getElementById('display-selected-grade').innerText = `TINGKAT KELAS ${gradeNum}`;
+            showStudentLogin();
+        }
+
         function showStudentLogin() {
             loadLoginClasses();
             loadActiveSubjectsForStudent();
@@ -1046,7 +1139,7 @@
             stopAndClearScanner(() => {
                 document.getElementById('camera-placeholder').classList.remove('hidden');
                 document.getElementById('btn-start-scan').classList.remove('hidden');
-                switchView('view-role');
+                switchView('view-grade-selection'); 
             });
         }
 
@@ -1063,23 +1156,25 @@
             return true;
         }
 
+        // MEMBEDAKAN MAPEL: Membaca mapel aktif sesuai tingkat (selectedGrade: 7, 8, atau 9)
         function loadActiveSubjectsForStudent() {
             const db = getSubjectsDB();
             const select = document.getElementById('student-subject-select');
             select.innerHTML = '<option value="">-- Pilih Mata Pelajaran --</option>';
             
             let hasActive = false;
-            for (const [subject, data] of Object.entries(db)) {
-                if (data.active) {
+            for (const [uniqueKey, data] of Object.entries(db)) {
+                // Memfilter mapel hanya jika status AKTIF dan TARGET KELAS-nya cocok dengan tingkatan selectedGrade siswa
+                if (data.active && String(data.grade) === String(selectedGrade)) {
                     hasActive = true;
                     const opt = document.createElement('option');
                     opt.value = data.url;
-                    opt.textContent = `${subject} (${data.duration || 90} Menit)`;
+                    opt.textContent = `${data.subjectName} (${data.duration || 90} Menit)`;
                     select.appendChild(opt);
                 }
             }
             if (!hasActive) {
-                select.innerHTML = '<option value="">-- Belum ada akses ujian langsung yang dibuka --</option>';
+                select.innerHTML = `<option value="">-- Belum ada akses ujian Kelas ${selectedGrade} yang dibuka --</option>`;
             }
         }
 
@@ -1138,9 +1233,9 @@
                         if(decodedText.startsWith('http')) {
                             const db = getSubjectsDB();
                             let matchedSubject = "Mapel QR Code";
-                            for(const [subj, data] of Object.entries(db)) {
+                            for(const [subjKey, data] of Object.entries(db)) {
                                 if(data.url === decodedText) {
-                                    matchedSubject = subj;
+                                    matchedSubject = data.subjectName;
                                     break;
                                 }
                             }
@@ -1245,7 +1340,7 @@
             // Dapatkan durasi ujian mapel terpilih
             const db = getSubjectsDB();
             let durationInMinutes = 90; // default jika tidak ditemukan
-            for (const [subj, data] of Object.entries(db)) {
+            for (const [subjKey, data] of Object.entries(db)) {
                 if (data.url === currentExamUrl) {
                     durationInMinutes = data.duration || 90;
                     break;
@@ -1521,6 +1616,7 @@
             });
         }
 
+        // Reset data aksen ujian murid
         function resetStudentData(id) {
             showCustomConfirm("Reset Akses Siswa", "Yakin ingin mereset data siswa ini?\n(Pilih 'Ya' agar siswa dapat mengerjakan ujian kembali)", () => {
                 try {
@@ -1575,8 +1671,8 @@
         function downloadTemplateCSV() {
             let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
             csvContent += "Nama Siswa,Kelas\n";
-            csvContent += "Contoh Siswa 1,XII IPA 1\n";
-            csvContent += "Contoh Siswa 2,XII IPA 2\n";
+            csvContent += "Contoh Siswa 1,7A\n";
+            csvContent += "Contoh Siswa 2,8B\n";
             
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
@@ -1708,8 +1804,20 @@
         function loadLoginClasses() {
             const db = getRegisteredStudentsDB();
             const classSelect = document.getElementById('student-class');
-            // Proteksi array untuk membuang null/undefined
-            const classes = [...new Set(db.filter(s => s && s.class).map(s => s.class))].sort();
+            
+            // Filter Kelas berdasarkan tingkat (selectedGrade: 7, 8, atau 9) yang dipilih sebelumnya
+            const classes = [...new Set(db.filter(s => {
+                if (!s || !s.class) return false;
+                const clsUpper = s.class.toUpperCase().trim();
+                if (selectedGrade === 7) {
+                    return clsUpper.startsWith("7") || clsUpper.startsWith("VII");
+                } else if (selectedGrade === 8) {
+                    return clsUpper.startsWith("8") || clsUpper.startsWith("VIII");
+                } else if (selectedGrade === 9) {
+                    return clsUpper.startsWith("9") || clsUpper.startsWith("IX");
+                }
+                return true;
+            }).map(s => s.class))].sort();
             
             classSelect.innerHTML = '<option value="">-- Pilih Kelas --</option>';
             classes.forEach(c => {
@@ -1750,8 +1858,12 @@
             if(!filterSelect) return;
             const currentVal = filterSelect.value;
             filterSelect.innerHTML = '<option value="">Semua Mapel</option>';
-            const subjects = Object.keys(getSubjectsDB());
-            subjects.forEach(subj => {
+            const db = getSubjectsDB();
+            
+            // Dapatkan list mata pelajaran unik (tanpa menduplikasi tingkat kelas)
+            let uniqueSubjects = [...new Set(Object.values(db).map(d => d.subjectName))].sort();
+            
+            uniqueSubjects.forEach(subj => {
                 const opt = document.createElement('option');
                 opt.value = subj;
                 opt.textContent = subj;
@@ -1931,7 +2043,7 @@
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `Monitoring_Excambro_${new Date().toLocaleDateString().replace(/\//g, '-')}.csv`);
+            link.setAttribute("download", `Monitoring_SPECTRA_EXAM_${new Date().toLocaleDateString().replace(/\//g, '-')}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -1939,27 +2051,30 @@
 
         function loadSubjectSettings() {
             const subject = document.getElementById('subject-select').value;
+            const gradeTarget = document.getElementById('subject-grade-target').value;
             const input = document.getElementById('exam-url-input');
             const durationInput = document.getElementById('exam-duration-input');
             const toggle = document.getElementById('subject-active-toggle');
             const qrImg = document.getElementById('generated-qr');
             
-            if (subject) {
+            if (subject && gradeTarget) {
                 const db = getSubjectsDB();
-                const data = db[subject];
+                // Kunci unik gabungan (Nama Mapel + Target Tingkatan Kelas)
+                const uniqueKey = `${subject}_${gradeTarget}`;
+                const data = db[uniqueKey];
                 
                 if (data) {
-                    input.value = data.url;
+                    input.value = data.url || '';
                     durationInput.value = data.duration || 90;
-                    toggle.checked = data.active;
-                    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(data.url)}`;
+                    toggle.checked = !!data.active;
+                    qrImg.src = data.url ? `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(data.url)}` : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=";
                 } else {
                     input.value = '';
                     durationInput.value = 90;
                     toggle.checked = false;
                     qrImg.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=";
                 }
-                document.getElementById('qr-subject-label').innerText = subject;
+                document.getElementById('qr-subject-label').innerText = `${subject} (Kls ${gradeTarget})`;
                 updateQRBadge(toggle.checked);
             } else {
                 input.value = '';
@@ -1987,6 +2102,7 @@
 
         function saveSubjectSettings() {
             const subject = document.getElementById('subject-select').value;
+            const grade = document.getElementById('subject-grade-target').value;
             const url = document.getElementById('exam-url-input').value.trim();
             const duration = parseInt(document.getElementById('exam-duration-input').value) || 90;
             const isActive = document.getElementById('subject-active-toggle').checked;
@@ -2002,17 +2118,27 @@
             }
 
             const db = getSubjectsDB();
-            db[subject] = { url: url, active: isActive, duration: duration };
+            // Simpan menggunakan kunci unik kombinasi Mata Pelajaran + Tingkat Kelas
+            const uniqueKey = `${subject}_${grade}`;
+            
+            db[uniqueKey] = { 
+                url: url, 
+                active: isActive, 
+                duration: duration, 
+                grade: String(grade),
+                subjectName: subject
+            };
+            
             localStorage.setItem(SUBJECTS_DB_KEY, JSON.stringify(db));
             syncToBackend();
 
             document.getElementById('generated-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}`;
-            document.getElementById('qr-subject-label').innerText = subject;
+            document.getElementById('qr-subject-label').innerText = `${subject} (Kls ${grade})`;
             updateQRBadge(isActive);
             
             window.dispatchEvent(new Event('storage'));
             
-            showCustomAlert("Berhasil", `Pengaturan ${subject} (Durasi ${duration} Menit) berhasil disimpan!`, "success");
+            showCustomAlert("Berhasil", `Pengaturan ${subject} untuk Kelas ${grade} (Durasi ${duration} Menit) berhasil disimpan!`, "success");
         }
 
         // ==========================================
