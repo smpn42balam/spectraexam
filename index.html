@@ -123,7 +123,7 @@
         </div>
     </div>
 
-    <!-- CUSTOM MODAL: VERIFIKASI PASSWORD GURU (BARU) -->
+    <!-- CUSTOM MODAL: VERIFIKASI PASSWORD GURU -->
     <div id="password-modal" class="fixed inset-0 z-[999] hidden flex-col items-center justify-center bg-black/60 backdrop-blur-sm p-4 transition-opacity duration-300 opacity-0">
         <div class="bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl max-w-sm w-full p-6 text-center transform transition-transform duration-300 scale-95" id="password-box">
             <div class="w-16 h-16 bg-blue-500/10 text-blue-400 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 border border-blue-500/20">
@@ -193,7 +193,7 @@
             <h1 class="text-3xl font-black mb-1 text-white tracking-widest uppercase">SPECTRA EXAM</h1>
             
             <!-- Deskripsi Kepanjangan SPECTRA -->
-            <p class="text-slate-400 text-[10px] sm:text-xs italic leading-relaxed max-w-sm mx-auto mb-4">
+            <p class="text-slate-300 text-[7px] sm:text-[9px] italic leading-relaxed max-w-sm mx-auto mb-3">
                 Secure Proctoring and Evaluation with Cheating Tracking in Real-time Assessment
             </p>
             
@@ -219,7 +219,7 @@
                     <i class="fas fa-chevron-right text-sm text-blue-200/50 group-hover:translate-x-1 transition-transform"></i>
                 </button>
                 
-                <!-- Kartu Pengawas (Sekarang Dilindungi Modal Password) -->
+                <!-- Kartu Pengawas (Sekaruh Dilindungi Modal Password) -->
                 <button onclick="showPasswordModal()" class="w-full text-left bg-slate-800/80 hover:bg-slate-800 text-slate-100 border border-slate-800 hover:border-slate-700 p-5 rounded-2xl font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl flex items-center gap-4 group">
                     <div class="w-12 h-12 bg-slate-700/50 border border-slate-600/50 rounded-xl flex items-center justify-center text-blue-400 text-2xl group-hover:scale-110 transition-transform duration-300">
                         <i class="fas fa-chalkboard-teacher"></i>
@@ -237,7 +237,7 @@
     <!-- VIEW 1B: GRADE SELECTION (PILIH TINGKAT KELAS) -->
     <div id="view-grade-selection" class="hidden flex-1 flex flex-col items-center justify-center p-6 bg-gradient-to-br from-blue-955 via-blue-900 to-slate-900 text-white relative overflow-hidden">
         <button onclick="switchView('view-role')" class="absolute top-6 left-6 text-slate-300 hover:text-white z-50">
-            <i class="fas fa-arrow-left text-xl"></i>
+            <i class="fas fa-expand text-xl opacity-0"></i><!-- spacer -->
         </button>
         <button onclick="toggleFullScreen()" class="absolute top-6 right-6 text-slate-300 hover:text-white z-50 transition transform hover:scale-110" title="Layar Penuh">
             <i class="fas fa-expand fullscreen-icon text-xl"></i>
@@ -337,7 +337,7 @@
                 <div id="method-qr" class="hidden flex flex-col items-center">
                     <div id="qr-reader-container" class="relative w-full aspect-square max-w-[240px] bg-black rounded-2xl overflow-hidden border-4 border-slate-600 mb-4 shadow-inner flex items-center justify-center mx-auto">
                         <div id="qr-reader" class="w-full h-full absolute inset-0 z-0"></div>
-                        <div id="camera-placeholder" class="absolute inset-0 flex flex-col items-center justify-center opacity-50 bg-slate-900 z-10 pointer-events-none transition-opacity duration-300">
+                        <div id="camera-placeholder" class="absolute inset-0 flex flex-col items-center justify-center opacity-50 bg-slate-95 border-0 z-10 pointer-events-none transition-opacity duration-300">
                             <i class="fas fa-qrcode text-5xl text-white mb-2"></i>
                         </div>
                     </div>
@@ -677,7 +677,7 @@
         // ==========================================
         // 1. CONSTANTS & GLOBAL STATE
         // ==========================================
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbyx4dd6TWu4ITCRPDhWVN7agoC0cHOrTMSjsUwxoHoNWzTPPaFNo2ZIMI0Kacik1L0VYQ/exec";
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbyXBfTwqgne1UgEuIZuPUi3chqB5LmeIW98mk550VeN122GRDGTi63DS3VoHikP2MYJ-A/exec";
         
         let currentStudentId = null;
         let currentStudentName = "";
@@ -712,7 +712,7 @@
         function saveDB(db) {
             localStorage.setItem(DB_KEY, JSON.stringify(db));
             window.dispatchEvent(new Event('storage'));
-            syncToBackend();
+            syncToBackend(['students']); // Tersegmentasi: Hanya sinkronisasi log siswa aktif
         }
 
         function getSubjectsDB() {
@@ -730,7 +730,8 @@
                         // backward compatibility untuk format data string lama
                         normalized[`${key}_7`] = { url: item, active: false, duration: 90, grade: "7", subjectName: key };
                     } else if (item) {
-                        let gradeTarget = item.grade || "7";
+                        // MENDETEKSI MULTI-ALIAS DARI BACKEND (Sistem Aman Lintas Kolom)
+                        let gradeTarget = item.grade || item.Grade || item.Tingkat || item.tingkat || item.Kelas || item.kelas || item.gradeTarget || "7";
                         let nameOnly = item.subjectName || key.split('_')[0] || key;
                         let uniqueKey = `${nameOnly}_${gradeTarget}`;
                         
@@ -739,6 +740,12 @@
                             active: !!item.active,
                             duration: parseInt(item.duration) || 90,
                             grade: String(gradeTarget),
+                            Grade: String(gradeTarget),
+                            Tingkat: String(gradeTarget),
+                            tingkat: String(gradeTarget),
+                            Kelas: String(gradeTarget),
+                            kelas: String(gradeTarget),
+                            gradeTarget: String(gradeTarget),
                             subjectName: nameOnly
                         };
                     }
@@ -766,7 +773,7 @@
                 db[studentKey].push(examUrl);
             }
             localStorage.setItem(COMPLETED_EXAMS_DB_KEY, JSON.stringify(db));
-            syncToBackend();
+            syncToBackend(['students', 'completedExams']); // Tersegmentasi: Sync log dan riwayat selesai
         }
 
         // Cek riwayat selesai ujian
@@ -802,11 +809,11 @@
         function saveRegisteredStudentsDB(db) {
             localStorage.setItem(REGISTERED_STUDENTS_DB_KEY, JSON.stringify(db));
             window.dispatchEvent(new Event('storage'));
-            syncToBackend();
+            syncToBackend(['registeredStudents']); // Tersegmentasi: Kirim khusus database siswa pre-register saja
         }
 
         // ==========================================
-        // --- SINKRONISASI CLOUD LINTAS-PERANGKAT ---
+        // --- SINKRONISASI CLOUD LINTAS-PERANGKAT (TERSEGMENTASI) ---
         // ==========================================
         function updateCloudUIStatus(status) {
             const badge = document.getElementById('cloud-sync-status');
@@ -820,17 +827,19 @@
             }
         }
 
-        async function syncToBackend() {
+        // PEMBARUAN UTAMA: syncToBackend kini menerima daftar komponen spesifik untuk menghindari penghapusan tidak sengaja
+        async function syncToBackend(components = ['students']) {
             updateCloudUIStatus('syncing');
             try {
+                const dataPayload = {};
+                if (components.includes('students')) dataPayload.students = getDB();
+                if (components.includes('subjects')) dataPayload.subjects = getSubjectsDB();
+                if (components.includes('completedExams')) dataPayload.completedExams = getCompletedExamsDB();
+                if (components.includes('registeredStudents')) dataPayload.registeredStudents = getRegisteredStudentsDB();
+
                 const payload = {
                     action: 'setDatabase',
-                    data: {
-                        students: getDB(),
-                        subjects: getSubjectsDB(),
-                        completedExams: getCompletedExamsDB(),
-                        registeredStudents: getRegisteredStudentsDB()
-                    }
+                    data: dataPayload
                 };
                 
                 const response = await fetch(GAS_URL, {
@@ -853,6 +862,7 @@
 
         async function fetchFromBackend() {
             try {
+                // DIHAPUS: Penggunaan AbortController dilepas untuk menghindari kesalahan signal aborted tanpa alasan
                 const response = await fetch(GAS_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -894,13 +904,20 @@
                         for (let k in rawCloudSubjects) {
                             let item = rawCloudSubjects[k];
                             if (typeof item === 'object') {
-                                let gTarget = item.grade || "7";
+                                // MENDETEKSI MULTI-ALIAS DARI BACKEND (Sistem Aman Lintas Kolom)
+                                let gTarget = item.grade || item.Grade || item.Tingkat || item.tingkat || item.Kelas || item.kelas || item.gradeTarget || "7";
                                 let sName = item.subjectName || k.split('_')[0] || k;
                                 normalizedCloud[`${sName}_${gTarget}`] = {
                                     url: item.url || "",
                                     active: !!item.active,
                                     duration: parseInt(item.duration) || 90,
                                     grade: String(gTarget),
+                                    Grade: String(gTarget),
+                                    Tingkat: String(gTarget),
+                                    tingkat: String(gTarget),
+                                    Kelas: String(gTarget),
+                                    kelas: String(gTarget),
+                                    gradeTarget: String(gTarget),
                                     subjectName: sName
                                 };
                             }
@@ -1054,7 +1071,7 @@
             if (type === 'error') {
                 icon.className = "w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-4";
                 icon.innerHTML = '<i class="fas fa-times-circle"></i>';
-                document.getElementById('custom-alert-btn-ok').className = "w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition";
+                document.getElementById('custom-alert-btn-ok').className = "w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-blue-500/30";
             } else if (type === 'success') {
                 icon.className = "w-16 h-16 bg-green-100 text-green-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-4";
                 icon.innerHTML = '<i class="fas fa-check-circle"></i>';
@@ -1062,7 +1079,7 @@
             } else {
                 icon.className = "w-16 h-16 bg-blue-100 text-blue-500 rounded-full flex items-center justify-center text-4xl mx-auto mb-4";
                 icon.innerHTML = '<i class="fas fa-info-circle"></i>';
-                document.getElementById('custom-alert-btn-ok').className = "w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-green-500/30";
+                document.getElementById('custom-alert-btn-ok').className = "w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-blue-500/30";
             }
 
             modal.classList.remove('hidden');
@@ -1140,7 +1157,7 @@
         }
 
         // ==========================================
-        // --- MODAL PASSWORD PENGAWAS (BARU) ---
+        // --- MODAL PASSWORD PENGAWAS ---
         // ==========================================
         function showPasswordModal() {
             const modal = document.getElementById('password-modal');
@@ -1178,7 +1195,8 @@
 
         function submitPassword() {
             const passwordInput = document.getElementById('dashboard-password-input');
-            if (passwordInput.value === '42bersama') {
+            // DIUBAH: Mengganti password dari '42bersama' menjadi ' 42bersama ' dengan spasi di awal dan di akhir
+            if (passwordInput.value === ' 42bersama ') {
                 hidePasswordModal();
                 initTeacherDashboard();
             } else {
@@ -1490,8 +1508,9 @@
             updateStudentStatus(currentStudentId, currentStudentName, currentStudentClass, 'Sedang Ujian', violations, "", currentExamUrl);
         }
 
+        // Timer pengerjaan
         function startTimer(durationInSeconds) {
-            examTimer = durationInSeconds; // total sisa waktu pengerjaan dalam detik
+            examTimer = durationInSeconds; // sisa waktu dalam detik
             clearInterval(timerInterval);
             timerInterval = setInterval(() => {
                 if (examTimer <= 0) {
@@ -1729,12 +1748,12 @@
             showCustomConfirm("Reset Semua Data", "Hapus semua data aktivitas dan RIWAYAT ujian siswa? (Ini akan mengizinkan SEMUA siswa mengerjakan ulang)", () => {
                 localStorage.removeItem(DB_KEY);
                 localStorage.removeItem(COMPLETED_EXAMS_DB_KEY);
-                syncToBackend();
+                syncToBackend(['students', 'completedExams']);
                 renderTeacherDashboard();
             });
         }
 
-        // Reset data aksen ujian murid
+        // Reset data akses ujian murid
         function resetStudentData(id) {
             showCustomConfirm("Reset Akses Siswa", "Yakin ingin mereset data siswa ini?\n(Pilih 'Ya' agar siswa dapat mengerjakan ujian kembali)", () => {
                 try {
@@ -1978,7 +1997,7 @@
             filterSelect.innerHTML = '<option value="">Semua Mapel</option>';
             const db = getSubjectsDB();
             
-            // Dapatkan list mata pelajaran unik (tanpa menduplikasi tingkat kelas)
+            // Dapatkan list mata pelajaran unik
             let uniqueSubjects = [...new Set(Object.values(db).map(d => d.subjectName))].sort();
             
             uniqueSubjects.forEach(subj => {
@@ -1997,7 +2016,7 @@
             renderTeacherDashboard();
         }
 
-        // Listener memori (Mencegah multi-listener) dipindahkan keluar
+        // Listener memori
         window.addEventListener('storage', (e) => {
             if(e.key === DB_KEY || e.key === null || e.key === SUBJECTS_DB_KEY || e.key === COMPLETED_EXAMS_DB_KEY || e.key === REGISTERED_STUDENTS_DB_KEY) {
                 if(e.key === SUBJECTS_DB_KEY) populateSubjectFilter();
@@ -2245,11 +2264,19 @@
                 active: isActive, 
                 duration: duration, 
                 grade: String(grade),
+                Grade: String(grade),
+                Tingkat: String(grade),
+                tingkat: String(grade),
+                Kelas: String(grade),
+                kelas: String(grade),
+                gradeTarget: String(grade),
                 subjectName: subject
             };
             
             localStorage.setItem(SUBJECTS_DB_KEY, JSON.stringify(db));
-            syncToBackend();
+            
+            // Perbaikan Segmentasi: Beritahu sistem hanya mengirim konfigurasi mapel
+            syncToBackend(['subjects']);
 
             document.getElementById('generated-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}`;
             document.getElementById('qr-subject-label').innerText = `${subject} (Kls ${grade})`;
